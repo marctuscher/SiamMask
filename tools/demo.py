@@ -4,6 +4,11 @@
 # Written by Qiang Wang (wangqiang2015 at ia.ac.cn)
 # --------------------------------------------------------
 import glob
+import time
+import sys
+sys.path.append("experiments/siammask_sharp")
+sys.path.append(".")
+from grasping.sensors import RealsenseSensor
 from tools.test import *
 
 parser = argparse.ArgumentParser(description='PyTorch Tracking Demo')
@@ -37,16 +42,22 @@ if __name__ == '__main__':
 
     # Select ROI
     cv2.namedWindow("SiamMask", cv2.WND_PROP_FULLSCREEN)
+    cam = RealsenseSensor("cfg/sensors/realsense_config.json")
     # cv2.setWindowProperty("SiamMask", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    cam.start()
+    time.sleep(0.5)
+    img, _ = cam.frames()
     try:
-        init_rect = cv2.selectROI('SiamMask', ims[0], False, False)
+        init_rect = cv2.selectROI('SiamMask', img, False, False)
         x, y, w, h = init_rect
     except:
         exit()
 
     toc = 0
-    for f, im in enumerate(ims):
+    f = 0
+    while True:
         tic = cv2.getTickCount()
+        im, _ = cam.frames()
         if f == 0:  # init
             target_pos = np.array([x + w / 2, y + h / 2])
             target_sz = np.array([w, h])
@@ -62,7 +73,7 @@ if __name__ == '__main__':
             key = cv2.waitKey(1)
             if key > 0:
                 break
-
+        f += 1
         toc += cv2.getTickCount() - tic
     toc /= cv2.getTickFrequency()
     fps = f / toc
