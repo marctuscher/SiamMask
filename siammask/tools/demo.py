@@ -6,10 +6,9 @@
 import glob
 import time
 import sys
-sys.path.append("experiments/siammask_sharp")
-sys.path.append(".")
-from grasping.sensors import RealsenseSensor
-from tools.test import *
+
+from ryperception.sensors import RospyImageSensor
+from siammask.tools.test import *
 
 parser = argparse.ArgumentParser(description='PyTorch Tracking Demo')
 
@@ -28,7 +27,7 @@ if __name__ == '__main__':
 
     # Setup Model
     cfg = load_config(args)
-    from custom import Custom
+    from siammask.experiments.siammask_sharp.custom import Custom
     siammask = Custom(anchors=cfg['anchors'])
     if args.resume:
         assert isfile(args.resume), 'Please download {} first.'.format(args.resume)
@@ -42,7 +41,7 @@ if __name__ == '__main__':
 
     # Select ROI
     cv2.namedWindow("SiamMask", cv2.WND_PROP_FULLSCREEN)
-    cam = RealsenseSensor("cfg/sensors/realsense_config.json")
+    cam = RospyImageSensor("cfg/sensors/rospy_image_sensor.json", "siam_mask_cam")
     # cv2.setWindowProperty("SiamMask", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cam.start()
     time.sleep(0.5)
@@ -68,6 +67,7 @@ if __name__ == '__main__':
             mask = state['mask'] > state['p'].seg_thr
 
             im[:, :, 2] = (mask > 0) * 255 + (mask == 0) * im[:, :, 2]
+            im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             cv2.polylines(im, [np.int0(location).reshape((-1, 1, 2))], True, (0, 255, 0), 3)
             cv2.imshow('SiamMask', im)
             key = cv2.waitKey(1)

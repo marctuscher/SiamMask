@@ -12,20 +12,20 @@ from PIL import Image
 from os import makedirs
 from os.path import join, isdir, isfile
 
-from utils.log_helper import init_log, add_file_handler
-from utils.load_helper import load_pretrain
-from utils.bbox_helper import get_axis_aligned_bbox, cxy_wh_2_rect
-from utils.benchmark_helper import load_dataset, dataset_zoo
+from siammask.utils.log_helper import init_log, add_file_handler
+from siammask.utils.load_helper import load_pretrain
+from siammask.utils.bbox_helper import get_axis_aligned_bbox, cxy_wh_2_rect
+from siammask.utils.benchmark_helper import load_dataset, dataset_zoo
 
 import torch
 from torch.autograd import Variable
 import torch.nn.functional as F
 
-from utils.anchors import Anchors
-from utils.tracker_config import TrackerConfig
+from siammask.utils.anchors import Anchors
+from siammask.utils.tracker_config import TrackerConfig
 
-from utils.config_helper import load_config
-from utils.pyvotkit.region import vot_overlap, vot_float2str
+from siammask.utils.config_helper import load_config
+from siammask.utils.pyvotkit.region import vot_overlap, vot_float2str
 
 thrs = np.arange(0.3, 0.5, 0.05)
 
